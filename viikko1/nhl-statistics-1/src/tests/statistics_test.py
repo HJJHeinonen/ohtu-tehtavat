@@ -19,8 +19,9 @@ class TestStatistics(unittest.TestCase):
 
     def test_haetaan_pelaaja(self):
         pelaaja = self.statistics.search("Semenko")
+        vastaus = str(pelaaja)
 
-        self.assertAlmostEqual(pelaaja, "Semenko EDM 4 + 12 = 16")
+        self.assertAlmostEqual(vastaus, "Semenko EDM 4 + 12 = 16")
 
     def test_pelaajaa_ei_loydy(self):
         pelaaja = self.statistics.search("Selanne")
@@ -29,10 +30,18 @@ class TestStatistics(unittest.TestCase):
 
     def test_haetaan_joukkueen_pelaajat(self):
         pelaajat = self.statistics.team("EDM")
-
-        self.assertAlmostEqual(pelaajat, ["Semenko EDM 4 + 12 = 16", "Kurri EDM 37 + 53 = 90", "Gretzky EDM 35 + 89 = 124"])
+        lista = []
+        for pelaaja in pelaajat:
+            tulostus = str(pelaaja)
+            lista.append(tulostus)
+        
+        self.assertAlmostEqual(lista, ["Semenko EDM 4 + 12 = 16", "Kurri EDM 37 + 53 = 90", "Gretzky EDM 35 + 89 = 124"])
 
     def test_kolme_parasta_pistemiesta(self):
-        pelaajat = self.statistics.top.scorers(3)
+        pelaajat = self.statistics.top_scorers(2)
+        lista = []
+        for pelaaja in pelaajat:
+            tulostus = str(pelaaja)
+            lista.append(tulostus)
 
-        self.assertAlmostEqual(pelaajat, ["Gretzky EDM 35 + 89 = 124", "Lemieux PIT 45 + 54 = 99", "Yzerman DET 42 + 56 = 98"])
+        self.assertAlmostEqual(lista, ["Gretzky EDM 35 + 89 = 124", "Lemieux PIT 45 + 54 = 99", "Yzerman DET 42 + 56 = 98"])
