@@ -14,11 +14,12 @@ class Kayttoliittyma:
         self._sovelluslogiikka = sovelluslogiikka
         self._root = root
         self._komennot = {
-            Komento.SUMMA: Summa(sovelluslogiikka, self._lue_syote),
-            Komento.EROTUS: Erotus(sovelluslogiikka, self._lue_syote),
+            Komento.SUMMA: Summa(sovelluslogiikka, self._lue_syote, self._lisaa_tulos_listaan),
+            Komento.EROTUS: Erotus(sovelluslogiikka, self._lue_syote, self._lisaa_tulos_listaan),
             Komento.NOLLAUS: Nollaus(sovelluslogiikka, self._lue_syote),
-            Komento.KUMOA: Kumoa(sovelluslogiikka, self._lue_syote)
+            Komento.KUMOA: Kumoa(sovelluslogiikka, self._palautettava_arvo)
         }
+        self._tulokset = []
 
     def kaynnista(self):
         self._tulos_var = StringVar()
@@ -62,6 +63,16 @@ class Kayttoliittyma:
 
     def _lue_syote(self):
         return self._syote_kentta.get()
+
+    def _lisaa_tulos_listaan(self):
+        self._tulokset.append(self._sovelluslogiikka.tulos)
+
+    def _palautettava_arvo(self):
+        try:
+            return self._tulokset.pop(-2)
+        except:
+            return 0
+
     
     def _suorita_komento(self, komento):
         komento_olio = self._komennot[komento]
@@ -76,30 +87,37 @@ class Kayttoliittyma:
         self._syote_kentta.delete(0, constants.END)
         self._tulos_var.set(self._sovelluslogiikka.tulos)
 
-class Summa(Kayttoliittyma):
-    def __init__(self, sovelluslogiikka, arvo):
-        self.sovelluslogiikka = sovelluslogiikka
-        self.arvo = arvo
-
-    def suorita(self):
-        self.sovelluslogiikka.plus(self.arvo)
-
-class Erotus(Kayttoliittyma):
-    def __init__(self, logiikka, arvo):
+class Summa:
+    def __init__(self, logiikka, arvo, lisaa_tulos):
         self.logiikka = logiikka
         self.arvo = arvo
+        self.lisaa_tulos_listaan = lisaa_tulos
 
     def suorita(self):
-        self.logiikka.miinus(self.arvo)
+        self.logiikka.plus(int(self.arvo()))
+        self.lisaa_tulos_listaan()
 
-class Nollaus(Kayttoliittyma):
+class Erotus:
+    def __init__(self, logiikka, arvo, lisaa_tulos):
+        self.logiikka = logiikka
+        self.arvo = arvo
+        self.lisaa_tulos_listaan = lisaa_tulos
+
+    def suorita(self):
+        self.logiikka.miinus(int(self.arvo()))
+        self.lisaa_tulos_listaan()
+
+class Nollaus:
     def __init__(self, logiikka, arvo):
         self.logiikka = logiikka
 
     def suorita(self):
         self.logiikka.nollaa()
 
-class Kumoa(Kayttoliittyma):
+class Kumoa:
     def __init__(self, logiikka, arvo):
         self.logiikka = logiikka
-    pass
+        self.arvo = arvo
+    
+    def suorita(self):
+        self.logiikka.aseta_arvo(int(self.arvo()))
